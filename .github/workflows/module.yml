@@ -1,0 +1,51 @@
+name: ndkbuntu
+on:
+  workflow_dispatch:
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    -  name: Setup Android SDK Tools
+       uses: android-actions/setup-android@v2
+    - name: Install NDK
+      run: echo "y" | sudo ${ANDROID_HOME}/tools/bin/sdkmanager --install "ndk;21.4.7075529" --sdk_root=${ANDROID_SDK_ROOT} &> /dev/null
+    - name: Build Module
+      run: |
+        set -euo pipefail
+        git clone --recurse-submodules https://github.com/kdrag0n/safetynet-fix
+        cd safetynet-fix
+
+        build_mode="release"
+        debug_mode=0
+
+        pushd zygisk/module
+        rm -fr libs
+        ${ANDROID_HOME}/ndk/21.4.7075529/ndk-build -j4 NDK_DEBUG=$debug_mode
+        popd
+
+        pushd java_module
+        ./gradlew assembleRelease
+        popd
+
+        mkdir -p magisk/zygisk
+        for arch in arm64-v8a armeabi-v7a x86 x86_64
+        do
+            cp "zygisk/module/libs/$arch/libsafetynetfix.so" "magisk/zygisk/$arch.so"
+        done
+
+        pushd magisk
+        version="$(grep '^version=' module.prop  | cut -d= -f2)"
+        rm -f "../safetynet-fix-$version.zip" classes.dex
+        unzip "../java_module/app/build/outputs/apk/release/app-release.apk" "classes.dex"
+        echo "artifact_name=safetynet-fix-$version" >> $GITHUB_ENV
+        echo "artifact_path=$(pwd)/*" >> $GITHUB_ENV
+        popd
+    - name: Upload Module
+      uses: actions/upload-artifact@v2
+      with:
+        name: ${{ env.artifact_name }}
+        path: ${{ env.artifact_path }}
