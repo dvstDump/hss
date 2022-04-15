@@ -27,7 +27,7 @@ jobs:
         ${ANDROID_HOME}/ndk/21.4.7075529/ndk-build -j4 NDK_DEBUG=$debug_mode
         popd
 
-        pushd java_module
+        pushd java
         ./gradlew assembleRelease
         popd
 
@@ -40,7 +40,7 @@ jobs:
         pushd magisk
         version="$(grep '^version=' module.prop  | cut -d= -f2)"
         rm -f "../safetynet-fix-$version.zip" classes.dex
-        unzip "../java_module/app/build/outputs/apk/release/app-release.apk" "classes.dex"
+        unzip "../java/app/build/outputs/apk/release/app-release.apk" "classes.dex"
         echo "artifact_name=safetynet-fix-$version" >> $GITHUB_ENV
         echo "artifact_path=$(pwd)/*" >> $GITHUB_ENV
         popd
