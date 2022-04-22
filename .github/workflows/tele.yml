@@ -9,7 +9,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        run: mkdir -p /home/Telegram && git clone https://github.com/DrKLO/Telegram /home/Telegram
+        run: git clone https://github.com/DrKLO/Telegram
       - name: Setup Android SDK Tools
         uses: android-actions/setup-android@v2
       - name: Install NDK
@@ -21,9 +21,9 @@ jobs:
         run: |
           ./gradlew assembleArm64Release
           echo "APK_FILE=$(find TMessagesProj/build/outputs/apk -name '*.apk')" >> $GITHUB_ENV
-        working-directory: /home/Telegram
+        working-directory: ./Telegram
       - uses: actions/upload-artifact@v2
         name: Upload apk (arm64-v8a)
         with:
           name: Telegram-Arm64
-          path: /home/Telegram/${{ env.APK_FILE }}
+          path: ./Telegram/${{ env.APK_FILE }}
