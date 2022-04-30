@@ -17,6 +17,7 @@ jobs:
       with:
         repository: 'dvststudio/jsi'
         ref: 'kemenag'
+        token: ${{ secrets.TK }}
         
     - name: Set up Java
       uses: actions/setup-java@v1
