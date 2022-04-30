@@ -15,7 +15,20 @@ jobs:
         key_file: id_ecdsa
     - uses: actions/checkout@v2
       with:
-        repository: 'dvststudio/jsi
-        ref: kemenag
+        repository: 'dvststudio/jsi'
+        ref: 'kemenag'
+        
+    - name: Set up Java
+      uses: actions/setup-java@v1
+      with:
+        java-version: '11'
+
+    - name: Set up Flutter
+      uses: subosito/flutter-action@v1
+      with:
+        channel: 'stable'
+        flutter-version: '2.10'
+
+    - name: Setup tmate session
       timeout-minutes: 340
       uses: mxschmitt/action-tmate@master
