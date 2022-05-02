@@ -16,7 +16,7 @@ jobs:
     - uses: actions/checkout@v2
       with:
         repository: 'dvststudio/jsi'
-        ref: 'kemenag'
+        ref: 'nomod'
         token: ${{ secrets.TK }}
         
     - name: Set up Java
